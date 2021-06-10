@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import JsonResponse
 import json
 import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
-
+from store.forms import UserRegisterForm
 def store(request):
 	data = cartData(request)
 
@@ -90,3 +90,15 @@ def processOrder(request):
 		)
 
 	return JsonResponse('Payment submitted..', safe=False)
+
+def register(request):
+	if request.method == 'POST':
+		form = UserRegisterForm(request.POST)
+		if form.is_valid():
+			myuser = form.save()
+			username = form.cleaned_data.get('username')
+			Customer.objects.create(user = myuser, name = form.cleaned_data.get('first_name') + ' ' + form.cleaned_data.get('last_name'),email = form.cleaned_data.get('email'))
+			return redirect('login')
+	else:
+		form = UserRegisterForm()
+	return render(request, 'store/register.html', {'form': form})	
