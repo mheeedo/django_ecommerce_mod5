@@ -5,6 +5,7 @@ import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
 from store.forms import UserRegisterForm
+
 def store(request):
 	data = cartData(request)
 
@@ -92,6 +93,8 @@ def processOrder(request):
 	return JsonResponse('Payment submitted..', safe=False)
 
 def register(request):
+	data = cartData(request)
+	cartItems = data['cartItems']
 	if request.method == 'POST':
 		form = UserRegisterForm(request.POST)
 		if form.is_valid():
@@ -102,3 +105,21 @@ def register(request):
 	else:
 		form = UserRegisterForm()
 	return render(request, 'store/register.html', {'form': form})	
+
+
+
+
+
+def search(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    if request.method == "POST":
+        searched = request.POST.get('searched')
+
+        if  searched :
+            product = Product.objects.filter(name__contains=searched)
+            return render(request,'store/search.html',{'searched' : searched,'products':product, 'cartItems':cartItems})
+        else:
+            return render(request,'store/search.html',{'searched' : searched,})
+    else:
+        return render(request,'store/search.html',{})

@@ -12,5 +12,6 @@ urlpatterns = [
 	path('process_order/', views.processOrder, name="process_order"),
 	path('logout/',auth_views.LogoutView.as_view(template_name='store/logout.html'),name='logout'),
     path('register/',views.register,name='register'),
+    path('search/',views.search,name='search'),
 
 ]
